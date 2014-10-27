@@ -11,18 +11,16 @@ if __name__ == "__main__":
     d = 10
     num_projections = 200
     matrix_list, matrix = gen_synth_data(n, d)
-
     rdd = sc.parallelize(matrix_list)
 
     spark_matrix = Matrix(rdd)
     num_experiments = 50
     c = 1
-    projection = Projections(spark_matrix)
-    sfjlt = projection.SpaFJLT(num_projections, c)
-    sfjlt_rdd = sc.parallelize(sfjlt)
-    print sfjlt_rdd
-    tsqr = TSQR(Matrix(sfjlt_rdd), 3)
-    R = tsqr.tsqr(sc)
+    projection = Projections(spark_matrix, sc)
+    projection_matrix = projection.SpaFJLT(num_projections, c)
+
+    tsqr = TSQR(projection_matrix, 3, sc)
+    R = tsqr.tsqr()
     R = np.linalg.inv(R)
     lev = spark_matrix.get_rdd().map(lambda row: np.linalg.norm(np.dot(row, R))**2)
     sum_vel = d*np.array(lev.collect())/lev.reduce(add)
