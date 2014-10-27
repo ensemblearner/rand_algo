@@ -1,6 +1,4 @@
-from pyspark import SparkContext
 from utils.utils import *
-from operator import add
 
 class TSQR(object):
     """

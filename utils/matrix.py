@@ -1,6 +1,5 @@
 from utils import *
-from basic import *
-from rand_solvers.projections import *
+
 
 class Matrix(object):
     def __init__(self, rdd):

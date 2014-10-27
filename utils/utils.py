@@ -1,5 +1,32 @@
 import numpy as np
 
+
+def parseVector(line):
+    return np.array([float(x) for x in line.split(' ')])
+
+
+def add(x, y):
+    x += y
+    return x
+
+
+def sampling(row, R, sumLev, s):
+    #row = row.getA1()
+    lev = np.linalg.norm(np.dot(row[:-1], R))**2
+    p = s*lev/sumLev
+    coin = np.random.rand()
+    if coin < p:
+        return row/p
+
+
+def unifSampling(row, n, s):
+    #row = row.getA1()
+    p = s/n
+    coin = np.random.rand()
+    if coin < p:
+        return row/p
+
+
 def num_rows_each_partition(iterator):
     yield sum(1 for _ in iterator)
 
@@ -31,13 +58,10 @@ def indexing_each_partition(splitIndex, iterator):
     yield indexing
 
 def partition_rdd(rdd, total_count, partitions, sc):
-        partitioned_rdd = sc.parallelize( rdd.take(total_count), partitions)
-        indexed_partitions = partitioned_rdd.mapPartitionsWithSplit( indexing_each_partition)
-        rows_each_partition = indexed_partitions.flatMap(lambda x:x).groupBy(lambda x:x[0]).map(lambda x: [ i[1] for i in x[1]])
-        return rows_each_partition
+    partitioned_rdd = sc.parallelize( rdd.take(total_count), partitions)
+    indexed_partitions = partitioned_rdd.mapPartitionsWithSplit( indexing_each_partition)
+    rows_each_partition = indexed_partitions.flatMap(lambda x:x).groupBy(lambda x:x[0]).map(lambda x: [ i[1] for i in x[1]])
+    return rows_each_partition
 
-def gen_synth_data(n, d):
-    matrix = np.random.randn(n,d)
-    return matrix.tolist(),matrix
 
 

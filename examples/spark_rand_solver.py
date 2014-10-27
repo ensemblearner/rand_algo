@@ -1,30 +1,35 @@
 from pyspark import SparkContext
+from regression.least_squares import *
+from scipy import stats
 
-from factorization.tsqr import TSQR
-from rand_solvers.projections import *
-from utils.matrix import Matrix
-from utils.utils import *
+
+def gen_random_data(num_samples, num_features):
+    np.random.seed(10)
+    X = np.random.randn(num_samples, num_features)
+    lambda_ = 4.
+    w = np.zeros(num_features)
+    relevant_features = np.random.randint(0, num_features, 10)
+    for i in relevant_features:
+        w[i] = stats.norm.rvs(loc=0, scale=1. / np.sqrt(lambda_))
+    alpha_ = 50.
+    noise = stats.norm.rvs(loc=0, scale=1. / np.sqrt(alpha_), size=num_samples)
+    y = np.dot(X, w) + noise
+    return X.tolist(), X, y
 
 if __name__ == "__main__":
     sc = SparkContext()
-    n = 32768
-    d = 10
+    n = 52768
+    d = 50
+    c = 1
     num_projections = 200
-    matrix_list, matrix = gen_synth_data(n, d)
+    matrix_list, matrix, y = gen_random_data(n, d)
     rdd = sc.parallelize(matrix_list)
 
     spark_matrix = Matrix(rdd)
-    num_experiments = 50
-    c = 1
-    projection = Projections(spark_matrix, sc)
-    projection_matrix = projection.SpaFJLT(num_projections, c)
+    ls = RandLeastSquares(sc)
+    app_lev = ls.fit(spark_matrix, y, num_projections, c)
 
-    tsqr = TSQR(projection_matrix, 3, sc)
-    R = tsqr.tsqr()
-    R = np.linalg.inv(R)
-    lev = spark_matrix.get_rdd().map(lambda row: np.linalg.norm(np.dot(row, R))**2)
-    sum_vel = d*np.array(lev.collect())/lev.reduce(add)
-    app_lev = np.array(sum_vel)
+
     U, D, V = np.linalg.svd(matrix, full_matrices=False)
     lev_exact = np.sum(U**2, axis=1)
     error = np.linalg.norm(lev_exact - app_lev) / np.linalg.norm(lev_exact)
