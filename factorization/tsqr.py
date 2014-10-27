@@ -1,5 +1,3 @@
-__author__ = 'msingh'
-
 from utils.utils import *
 from operator import add
 

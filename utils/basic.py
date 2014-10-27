@@ -1,4 +1,3 @@
-__author__ = 'msingh'
 import numpy as np
 
 def parseVector(line):

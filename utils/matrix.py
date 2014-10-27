@@ -1,5 +1,3 @@
-__author__ = 'msingh'
-
 from utils import *
 from basic import *
 from rand_solvers.projections import *

@@ -1,7 +1,4 @@
-__author__ = 'msingh'
-
 import numpy as np
-
 
 def num_rows_each_partition(iterator):
     yield sum(1 for _ in iterator)
