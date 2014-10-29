@@ -1,6 +1,7 @@
 import numpy as np
-
-
+import random
+from bisect import bisect
+from operator import itemgetter
 def parseVector(line):
     return np.array([float(x) for x in line.split(' ')])
 
@@ -63,5 +64,21 @@ def partition_rdd(rdd, total_count, partitions, sc):
     rows_each_partition = indexed_partitions.flatMap(lambda x:x).groupBy(lambda x:x[0]).map(lambda x: [ i[1] for i in x[1]])
     return rows_each_partition
 
+def include(p):
+    probs = p[1][1]
+    flag = True if random.random() < probs else False
+    return p + (flag,)
 
 
+
+def sample(population, k, prob):
+    population = map(itemgetter(1), sorted(zip(prob, population)))
+   # print "populatation ", population
+    def cdf(population, k, prob):
+        population = map(itemgetter(1), sorted(zip(prob, population)))
+        _cumm = [prob[0]]
+        for i in range(1, len(prob)):
+            _cumm.append(_cumm[-1] + prob[i])
+        return [population[bisect(_cumm, random.random())] for i in range(k)]
+
+    return cdf(population, k, prob)
