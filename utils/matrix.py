@@ -24,12 +24,12 @@ class Matrix(object):
         return Matrix(self.matrix.join(other.matrix).map(lambda (k, v): v). \
                       mapPartitions(other_iterator).sum())
 
-    def take(self, rows):
-        return self.matrix.matrix.take(rows)
+    def take(self, num_rows):
+        return self.matrix.take(num_rows)
 
 
     def top(self):
-        return self.matrix.matrix.first()
+        return self.matrix.first()
 
     def collect(self):
         return self.matrix.collect()

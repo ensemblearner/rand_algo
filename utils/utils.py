@@ -79,6 +79,13 @@ def sample(population, k, prob):
         _cumm = [prob[0]]
         for i in range(1, len(prob)):
             _cumm.append(_cumm[-1] + prob[i])
-        return [population[bisect(_cumm, random.random())] for i in range(k)]
+        indices =  [bisect(_cumm, random.random()) for i in range(k)]
+        data_dictionary = {'samples':[population[index] for index in indices],
+                           'probs':[prob[index] for index in indices] }
+        return data_dictionary
 
     return cdf(population, k, prob)
+
+def rescale(sampled_distribution, probalities):
+    #rescale 1/sqrt(c*p)
+    pass

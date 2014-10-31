@@ -5,19 +5,16 @@ from sklearn import linear_model
 import numpy as np
 
 class RandLeastSquares:
-    def __init__(self, k, sc):
-        self.k = k
+    def __init__(self, num_samples, sc):
+        self.num_samples = num_samples
         self.sc = sc
         self.clf = linear_model.LinearRegression()
 
     def fit(self, X, y, num_projections=50, c=1):
         leverage_scores = self.__compute_leverage_scores(X, num_projections, c)
-
         X = X.matrix.collect()
         y = y.collect()
-        #print "X is ",X
-        #print "y is ", y
-        sampled_X, sampled_y = self.__sample_dataset(X, y, leverage_scores)
+        sampled_X, sampled_y = self.__sample_and_dataset(X, y, leverage_scores)
 
         self.clf.fit(sampled_X, sampled_y)
 
@@ -37,13 +34,17 @@ class RandLeastSquares:
         #print joined_by_key.take(2)
         """
         return leverage_scores
-    def __sample_dataset(self, X, y, probs):
-
-        samples = zip(*sample(zip(X,y ), self.k, prob=probs))
 
 
-        sampled_X = samples[0]
-        sampled_Y = samples[1]
+    def __sample_and_scale_dataset(self, X, y, probs, scale=True):
+
+        samples = sample(zip(X,y), self.num_samples, prob=probs)
+        sampled_X = samples['samples'][0]
+        sampled_Y = samples['samples'][1]
+        selected_probs = samples['probs']
+        if scale:
+            sampled_X = rescale(sampled_X, selected_probs)
+
         return sampled_X, sampled_Y
 
     def __compute_leverage_scores(self, X, num_projections, c):
