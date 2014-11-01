@@ -86,6 +86,3 @@ def sample(population, k, prob):
 
     return cdf(population, k, prob)
 
-def rescale(sampled_distribution, probalities):
-    #rescale 1/sqrt(c*p)
-    pass

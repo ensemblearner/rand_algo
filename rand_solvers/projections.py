@@ -1,24 +1,25 @@
-from utils.matrix import *
 from .projection_utils import *
 import numpy.linalg as npl
+
 class Projections(object):
     def __init__(self, matrix, **kwargs):
         self.matrix = matrix
         self.method = kwargs.pop('method', 'cw')
         self.k = kwargs.pop('k')
         self.c = kwargs.pop('c')
+        self.s = kwargs.pop('s', None)
         self.technique = kwargs.pop('technique')
         self.solution = self.__execute()
         self.__validate()
 
     def __validate(self):
         if self.method not in Projections.METHODS:
-            raise NotImplementedError("%s method not yet implemented" % self.method)
+            raise NotImplementedError('%s method not yet implemented' % self.method)
         if not self.c:
-            raise ValueError("'c' param is missing")
+            raise ValueError('"c" param is missing')
         if not self.k:
-            raise ValueError("'k' param is missing")
-        if self.technique not in ['projection', 'sampling']:
+            raise ValueError('"k"e param is missing')
+        if self.technique not in Projections.TECHNIQUES:
             raise NotImplementedError('%s technique not implemented yet' % self.technique)
 
     def __execute(self):
@@ -54,12 +55,20 @@ class Projections(object):
         return x
 
     def random_sample(self, PA):
+        if not self.s:
+            raise ValueError("s param cannot be none but is %s" % self.s)
+
         N = []
         for i in range(self.k):
             PAb = np.array(PA[i][1])
             [U, s, V] = npl.svd(PAb, 0)
             N.append(V.transpose()/s)
-        return N
+        sumLev = comp_lev(self.matrix.matrix, N)
+        s = self.s
+
+        x = sample_solve(self.matrix.matrix, N, sumLev, s)
+        return x
 
 
     METHODS = ['cw', 'gaussian']
+    TECHNIQUES = ['projection', 'sampling']
