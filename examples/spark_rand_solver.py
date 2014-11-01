@@ -19,5 +19,5 @@ if __name__ == "__main__":
     #for technique in ['sampling']:
     for technique in ['projection', 'sampling']:
         for method in ['cw', 'gaussian']:
-            projection = Projections(matrix, k=3, c=5000, s=1000, method=method, technique=technique)
-            print method," " ,technique," => ", projection.solution
+            projection = Projections( k=3, c=5000, s=1000, method=method, technique=technique)
+            print method," " ,technique," => ", projection.execute(matrix)

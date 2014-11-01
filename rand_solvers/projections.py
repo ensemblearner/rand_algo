@@ -2,15 +2,15 @@ from .projection_utils import *
 import numpy.linalg as npl
 
 class Projections(object):
-    def __init__(self, matrix, **kwargs):
-        self.matrix = matrix
+    def __init__(self, **kwargs):
         self.method = kwargs.pop('method', 'cw')
         self.k = kwargs.pop('k')
         self.c = kwargs.pop('c')
         self.s = kwargs.pop('s', None)
         self.technique = kwargs.pop('technique')
-        self.solution = self.__execute()
         self.__validate()
+        #self.solution = self.__execute()
+
 
     def __validate(self):
         if self.method not in Projections.METHODS:
@@ -18,11 +18,12 @@ class Projections(object):
         if not self.c:
             raise ValueError('"c" param is missing')
         if not self.k:
-            raise ValueError('"k"e param is missing')
+            raise ValueError('"k" param is missing')
         if self.technique not in Projections.TECHNIQUES:
             raise NotImplementedError('%s technique not implemented yet' % self.technique)
 
-    def __execute(self):
+    def execute(self, matrix):
+        self.matrix = matrix
         PA = self.__project()
         return self.__solve(PA)
 
