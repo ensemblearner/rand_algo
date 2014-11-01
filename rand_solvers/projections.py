@@ -2,7 +2,8 @@ from .projection_utils import *
 import numpy.linalg as npl
 
 class Projections(object):
-    def __init__(self, **kwargs):
+    def __init__(self, matrix, **kwargs):
+        self.matrix = matrix
         self.method = kwargs.pop('method', 'cw')
         self.k = kwargs.pop('k')
         self.c = kwargs.pop('c')
@@ -22,8 +23,8 @@ class Projections(object):
         if self.technique not in Projections.TECHNIQUES:
             raise NotImplementedError('%s technique not implemented yet' % self.technique)
 
-    def execute(self, matrix):
-        self.matrix = matrix
+    def execute(self):
+        #self.matrix = matrix
         PA = self.__project()
         return self.__solve(PA)
 
