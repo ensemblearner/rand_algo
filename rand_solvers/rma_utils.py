@@ -51,8 +51,8 @@ def rademacher_map(rows,c,k):
 def comp_lev(rows, N):
     return rows.map(lambda row: xN(row, N)).reduce(add).tolist()
 
-def xN(x,N):
-    return np.array([npl.norm(np.dot(np.array(x),N1))**2 for N1 in N])
+def xN(x, N):
+    return np.array([npl.norm(np.dot(np.array(x), N1))**2 for N1 in N])
 
 def sample_solve(rows, N, sumLev, s):
     SA = rows.flatMap(lambda row: sample(row, N, sumLev, s)).groupByKey().collect()

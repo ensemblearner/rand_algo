@@ -18,7 +18,7 @@ if __name__ == "__main__":
     matrix_b = Matrix(b_rdd)
 
     for technique in ['projection', 'sampling']:
-        for method in ['srdht','cw','gaussian','rademacher']:
+        for method in ['srdht', 'cw', 'gaussian', 'rademacher']:
             ls = RandLeastSquares(matrix_A, matrix_b, sc=sc, k=2, c=3000, s=2000, method=method, technique=technique)
             x, costs = ls.fit(A, b)
 
