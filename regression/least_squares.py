@@ -4,7 +4,8 @@ from utils.matrix import *
 import logging
 
 logger = logging.getLogger(__name__)
-
+logging.basicConfig()
+logger.setLevel(logging.INFO)
 class RandLeastSquares:
     def __init__(self, matrix_A, matrix_b, **kwargs):
         self.k = kwargs.get('k')
@@ -24,18 +25,16 @@ class RandLeastSquares:
             if not self.s:
                 raise ValueError("s param cannot be none but is %s" % self.s)
 
-            N =  self.projection.execute(self.matrix_Ab, 'svd')
+            N = self.projection.execute(self.matrix_Ab, 'svd')
             sumLev = comp_lev(self.matrix_Ab.matrix, N)
             x = sample_solve(self.matrix_Ab.matrix, N, sumLev, self.s)
         else:
             raise ValueError("invalid technique")
 
-        if debug:
-            x_opt, f_opt = self.__ideal_cost(A, b)
-
-        for i in range(self.k):
+        for i in xrange(self.k):
             cost = npl.norm(np.dot(A, x[i])-b)
             if debug:
+                x_opt, f_opt = self.__ideal_cost(A, b)
                 logger.info(npl.norm(np.array(x[i])-x_opt)/npl.norm(x_opt))
                 print npl.norm(np.array(x[i])-x_opt)/npl.norm(x_opt)
                 logger.info(np.abs(f_opt-cost)/f_opt)
