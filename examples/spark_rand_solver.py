@@ -6,12 +6,13 @@ from rand_solvers.projections import *
 from utils.matrix import *
 
 from pyspark import SparkContext
-
+import sys
 
 if __name__ == "__main__":
 
     sc = SparkContext("local[4]", "test") # initiate an Spark object
     Ab = np.loadtxt('/Users/msingh/Downloads/semicoh_65536_100.txt')
+    print Ab.shape
     Ab_rdd = sc.parallelize(Ab.tolist()) # Create a RDD for the rows of A.
 
     matrix = Matrix(Ab_rdd)
@@ -20,4 +21,6 @@ if __name__ == "__main__":
     for technique in ['projection', 'sampling']:
         for method in ['cw', 'gaussian']:
             projection = Projections(matrix, k=3, c=5000, s=1000, method=method, technique=technique)
-            print method," " ,technique," => ", projection.execute()
+            result = projection.execute()
+            print method, " ", technique, " => ", result, " ", len(result[0])
+            sys.exit()

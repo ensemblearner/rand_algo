@@ -8,7 +8,10 @@ class Matrix(object):
 
     def get_dimensions(self):
         m = self.matrix.count()
-        n = len(self.matrix.first())
+        try:
+            n = len(self.matrix.first())
+        except:
+            n = 1
         return m, n
 
     def transpose(self):
